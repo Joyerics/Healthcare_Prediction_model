@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CardioSight | Cardiovascular Health Assessment Tool</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+  <div class="page-shell">
+    <header class="topbar">
+      <div class="brand">
+        <div class="brand-mark">C</div>
+        <div class="brand-text">
+          <span class="brand-title">CardioSight</span>
+          <span class="brand-subtitle">Clinical Risk Intelligence</span>
+        </div>
+      </div>
+      <nav class="main-nav">
+        <a href="#overview">Overview</a>
+        <a href="#assessment">Assessment</a>
+        <a href="#results">Results</a>
+        <a href="#insights">Insights</a>
+      </nav>
+      <div class="top-actions">
+        <button class="ghost-btn" type="button">Hospital Mode</button>
+        <button class="primary-btn" type="button" onclick="document.getElementById('assessment').scrollIntoView({behavior:'smooth'})">Start Assessment</button>
+      </div>
+    </header>
+
+    <main class="main-wrap">
+      <section class="hero" id="overview">
+        <div class="hero-copy">
+          <span class="eyebrow">Cardiovascular Health Assessment Tool</span>
+          <h1>Professional risk screening interface designed for modern healthcare workflows.</h1>
+          <p>
+            This deployed model frontend combines a hospital-grade visual layout with structured patient intake,
+            interpretable model output, tooltips, and a live clinical summary.
+          </p>
+
+          <div class="hero-actions">
+            <button class="primary-btn" type="button" onclick="document.getElementById('assessment').scrollIntoView({behavior:'smooth'})">Launch Intake Form</button>
+            <button class="ghost-btn" type="button" onclick="document.getElementById('results').scrollIntoView({behavior:'smooth'})">View Model Metrics</button>
+          </div>
+
+          <div class="hero-stats">
+            <div class="stat-chip">
+              <span>Accuracy</span>
+              <strong>{{ "%.4f"|format(metrics.accuracy) }}</strong>
+            </div>
+            <div class="stat-chip">
+              <span>AUROC</span>
+              <strong>{{ "%.4f"|format(metrics.auroc) }}</strong>
+            </div>
+            <div class="stat-chip">
+              <span>Recall</span>
+              <strong>{{ "%.4f"|format(metrics.recall) }}</strong>
+            </div>
+          </div>
+        </div>
+
+        <div class="hero-visual">
+          <div class="dashboard-card large-card">
+            <div class="mini-head">
+              <span>Clinical Dashboard</span>
+              <span class="status-dot"></span>
+            </div>
+            <div class="patient-profile">
+              <div class="avatar-circle">A</div>
+              <div>
+                <strong>Assessment Console</strong>
+                <p>Hospital-ready cardiovascular risk workflow</p>
+              </div>
+            </div>
+            <div class="mini-grid">
+              <div class="mini-tile">
+                <span>Screening Type</span>
+                <strong>CVD Risk</strong>
+              </div>
+              <div class="mini-tile">
+                <span>Review Mode</span>
+                <strong>Outpatient</strong>
+              </div>
+              <div class="mini-tile">
+                <span>Use Case</span>
+                <strong>Decision Support</strong>
+              </div>
+              <div class="mini-tile">
+                <span>System</span>
+                <strong>Model Assisted</strong>
+              </div>
+            </div>
+          </div>
+
+          <div class="floating-card one">
+            <span>Clinical Summary</span>
+            <strong>Live interpretation panel</strong>
+          </div>
+          <div class="floating-card two">
+            <span>Assessment Inputs</span>
+            <strong>Structured patient profile fields</strong>
+          </div>
+        </div>
+      </section>
+
+      <section class="workspace">
+        <section class="form-panel" id="assessment">
+          <div class="panel-head">
+            <div>
+              <span class="eyebrow">Patient intake</span>
+              <h2>Cardiovascular disease risk assessment form</h2>
+              <p>Fields are based on the BRFSS cardiovascular dataset and prepared for deployed model inference.</p>
+            </div>
+          </div>
+
+          <form method="POST" class="assessment-form">
+            <div class="field-grid">
+              {% for col in categorical_cols %}
+              <div class="field-card">
+                <label for="{{ col }}">
+                  {% if col == "General_Health" %}
+                    General Health
+                  {% elif col == "Checkup" %}
+                    Recent Checkup
+                  {% elif col == "Smoking_History" %}
+                    Smoking History
+                  {% else %}
+                    {{ col.replace('_', ' ') }}
+                  {% endif %}
+
+                  {% if col == "General_Health" %}
+                    <span class="info-wrap"><span class="info-icon" tabindex="0">ⓘ</span><span class="tooltip">Patient-reported overall health status.</span></span>
+                  {% elif col == "Checkup" %}
+                    <span class="info-wrap"><span class="info-icon" tabindex="0">ⓘ</span><span class="tooltip">Time since last routine health checkup.</span></span>
+                  {% elif col == "Exercise" %}
+                    <span class="info-wrap"><span class="info-icon" tabindex="0">ⓘ</span><span class="tooltip">Physical activity status can influence cardiovascular risk.</span></span>
+                  {% elif col == "Diabetes" %}
+                    <span class="info-wrap"><span class="info-icon" tabindex="0">ⓘ</span><span class="tooltip">Diabetes is one of the strongest cardiovascular risk indicators in the model.</span></span>
+                  {% elif col == "Smoking_History" %}
+                    <span class="info-wrap"><span class="info-icon" tabindex="0">ⓘ</span><span class="tooltip">Smoking history is a major behavioral risk factor.</span></span>
+                  {% elif col == "Age_Category" %}
+                    <span class="info-wrap"><span class="info-icon" tabindex="0">ⓘ</span><span class="tooltip">Older age groups generally increase model-estimated risk.</span></span>
+                  {% endif %}
+                </label>
+
+                <select name="{{ col }}" id="{{ col }}">
+                  {% for option in category_options[col] %}
+                  <option value="{{ option }}" {% if submitted.get(col, defaults[col]) == option %}selected{% endif %}>{{ option }}</option>
+                  {% endfor %}
+                </select>
+              </div>
+              {% endfor %}
+
+              {% for col in numeric_cols %}
+              <div class="field-card">
+                <label for="{{ col }}">
+                  {% if col == "Alcohol_Consumption" %}
+                    Alcohol Consumption (past 30 days)
+                  {% elif col == "Fruit_Consumption" %}
+                    Fruit Consumption (past 30 days)
+                  {% elif col == "Green_Vegetables_Consumption" %}
+                    Green Vegetables Consumption (past 30 days)
+                  {% elif col == "FriedPotato_Consumption" %}
+                    Fried Potato Consumption (past 30 days)
+                  {% elif col == "Height_(cm)" %}
+                    Height (cm)
+                  {% elif col == "Weight_(kg)" %}
+                    Weight (kg)
+                  {% else %}
+                    {{ col.replace('_', ' ') }}
+                  {% endif %}
+
+                  {% if col in ["Alcohol_Consumption", "Fruit_Consumption", "Green_Vegetables_Consumption", "FriedPotato_Consumption"] %}
+                    <span class="info-wrap"><span class="info-icon" tabindex="0">ⓘ</span><span class="tooltip">Recorded as frequency over the past 30 days. A daily average appears below automatically.</span></span>
+                  {% elif col == "BMI" %}
+                    <span class="info-wrap"><span class="info-icon" tabindex="0">ⓘ</span><span class="tooltip">BMI is an important numeric predictor in the model.</span></span>
+                  {% endif %}
+                </label>
+
+                <input type="number" step="any" name="{{ col }}" id="{{ col }}" value="{{ submitted.get(col, defaults[col]) }}">
+
+                {% if col in ["Alcohol_Consumption", "Fruit_Consumption", "Green_Vegetables_Consumption", "FriedPotato_Consumption"] %}
+                <small class="field-hint">Frequency based on past 30 days</small>
+                <div class="daily-conversion" id="{{ col }}_daily"></div>
+                {% endif %}
+              </div>
+              {% endfor %}
+            </div>
+
+            <div class="form-actions">
+              <button class="primary-btn" type="submit">Run Risk Prediction</button>
+            </div>
+          </form>
+        </section>
+
+        <aside class="side-panel">
+          <section class="result-panel" id="results">
+            <div class="panel-head compact">
+              <div>
+                <span class="eyebrow">Prediction output</span>
+                <h3>Model screening result</h3>
+              </div>
+            </div>
+
+            {% if prediction %}
+            <div class="result-main">
+              <div>
+                <p class="result-label">Prediction</p>
+                <h2>{{ prediction }}</h2>
+                <p class="result-copy">{{ risk_band }} based on the current submitted profile.</p>
+              </div>
+              <div class="risk-badge {% if probability >= 0.7 %}high{% elif probability >= 0.4 %}moderate{% else %}low{% endif %}">
+                {{ "%.1f"|format(probability * 100) }}%
+              </div>
+            </div>
+
+            <div class="result-meter">
+              <div class="result-fill {% if probability >= 0.7 %}high{% elif probability >= 0.4 %}moderate{% else %}low{% endif %}" style="width: {{ probability * 100 }}%"></div>
+            </div>
+            <div class="meter-scale">
+              <span>Lower</span>
+              <span>Moderate</span>
+              <span>Higher</span>
+            </div>
+            {% else %}
+            <div class="empty-box">
+              <p>Submit the intake form to generate a patient-specific risk output.</p>
+            </div>
+            {% endif %}
+          </section>
+
+          <section class="summary-panel" id="insights">
+            <div class="panel-head compact">
+              <div>
+                <span class="eyebrow">Clinical summary</span>
+                <h3>Real-time interpretation</h3>
+              </div>
+            </div>
+            <div id="dynamic-explanations" class="dynamic-explanations">
+              <p class="muted-copy">Change inputs to see field-level clinical interpretation.</p>
+            </div>
+          </section>
+
+          <section class="metrics-panel">
+            <div class="panel-head compact">
+              <div>
+                <span class="eyebrow">Model evidence</span>
+                <h3>Performance overview</h3>
+              </div>
+            </div>
+            <div class="metrics-list">
+              <div><span>Accuracy</span><strong>{{ "%.4f"|format(metrics.accuracy) }}</strong></div>
+              <div><span>Precision</span><strong>{{ "%.4f"|format(metrics.precision) }}</strong></div>
+              <div><span>Recall</span><strong>{{ "%.4f"|format(metrics.recall) }}</strong></div>
+              <div><span>F1 Score</span><strong>{{ "%.4f"|format(metrics.f1) }}</strong></div>
+              <div><span>AUROC</span><strong>{{ "%.4f"|format(metrics.auroc) }}</strong></div>
+            </div>
+          </section>
+        </aside>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    function formatDailyValue(value) {
+      if (isNaN(value) || value === "") return "";
+      return (Number(value) / 30).toFixed(2);
+    }
+
+    function updateMonthlyToDaily() {
+      const monthlyFields = [
+        "Alcohol_Consumption",
+        "Fruit_Consumption",
+        "Green_Vegetables_Consumption",
+        "FriedPotato_Consumption"
+      ];
+
+      monthlyFields.forEach(field => {
+        const input = document.getElementById(field);
+        const output = document.getElementById(field + "_daily");
+        if (input && output) {
+          const val = input.value;
+          output.textContent = val !== "" ? "Approximate daily average: " + formatDailyValue(val) + " per day" : "";
+        }
+      });
+    }
+
+    function updateClinicalSummary() {
+      const bmi = parseFloat(document.getElementById("BMI")?.value || "");
+      const age = document.getElementById("Age_Category")?.value || "";
+      const smoke = document.getElementById("Smoking_History")?.value || "";
+      const diabetes = document.getElementById("Diabetes")?.value || "";
+      const exercise = document.getElementById("Exercise")?.value || "";
+      const generalHealth = document.getElementById("General_Health")?.value || "";
+      const alcohol = parseFloat(document.getElementById("Alcohol_Consumption")?.value || "");
+      const box = document.getElementById("dynamic-explanations");
+      if (!box) return;
+
+      const items = [];
+
+      if (!isNaN(bmi)) {
+        items.push(`<div class="explain-item"><strong>BMI:</strong> ${
+          bmi >= 30 ? "High BMI may materially increase cardiovascular risk." :
+          bmi >= 25 ? "BMI is mildly elevated and may contribute to moderate risk." :
+          "BMI is in a lower-risk range relative to overweight and obesity levels."
+        }</div>`);
+      }
+
+      if (age) {
+        items.push(`<div class="explain-item"><strong>Age:</strong> ${
+          ["60-64","65-69","70-74","75-79","80+"].includes(age)
+            ? "Older age groups generally contribute strongly to predicted cardiovascular risk."
+            : ["50-54","55-59"].includes(age)
+            ? "This age group can contribute moderately to cardiovascular risk."
+            : "This age group usually contributes less cardiovascular risk than older categories."
+        }</div>`);
+      }
+
+      if (smoke) {
+        items.push(`<div class="explain-item"><strong>Smoking History:</strong> ${
+          smoke === "Yes"
+            ? "Smoking history is a known cardiovascular risk factor and may increase predicted risk."
+            : "No smoking history removes one major lifestyle-related cardiovascular risk factor."
+        }</div>`);
+      }
+
+      if (diabetes) {
+        items.push(`<div class="explain-item"><strong>Diabetes:</strong> ${
+          diabetes !== "No"
+            ? "Diabetes-related status is one of the strongest risk indicators in this screening workflow."
+            : "No diabetes reported, which is favorable for cardiovascular risk assessment."
+        }</div>`);
+      }
+
+      if (exercise) {
+        items.push(`<div class="explain-item"><strong>Exercise:</strong> ${
+          exercise === "No"
+            ? "Low physical activity may push the risk profile upward."
+            : "Reported exercise may support a lower-risk profile."
+        }</div>`);
+      }
+
+      if (generalHealth) {
+        items.push(`<div class="explain-item"><strong>General Health:</strong> ${
+          ["Fair","Poor"].includes(generalHealth)
+            ? "Lower self-rated health is associated with increased cardiovascular risk."
+            : "Better self-rated health is generally associated with a lower risk profile."
+        }</div>`);
+      }
+
+      if (!isNaN(alcohol)) {
+        items.push(`<div class="explain-item"><strong>Alcohol Consumption:</strong> Approximate daily average is <strong>${formatDailyValue(alcohol)}</strong> per day based on the past 30 days input.</div>`);
+      }
+
+      box.innerHTML = items.length ? items.join("") : '<p class="muted-copy">Change inputs to see field-level clinical interpretation.</p>';
+    }
+
+    function bindLiveUpdates() {
+      document.querySelectorAll("input, select").forEach(el => {
+        el.addEventListener("input", () => {
+          updateMonthlyToDaily();
+          updateClinicalSummary();
+        });
+        el.addEventListener("change", () => {
+          updateMonthlyToDaily();
+          updateClinicalSummary();
+        });
+      });
+    }
+
+    updateMonthlyToDaily();
+    updateClinicalSummary();
+    bindLiveUpdates();
+  </script>
+</body>
+</html>
