@@ -150,7 +150,7 @@ The project includes a **fully deployed healthcare-style web application**.
 
 ```bash
 git clone https://github.com/Joyerics/Healthcare_Prediction_model.git 
-hp Healthcare_Prediction
+cd Healthcare_Prediction_model
 
 pip install -r requirements.txt
 python app.py
