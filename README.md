@@ -150,7 +150,7 @@ The project includes a **fully deployed healthcare-style web application**.
 
 ```bash
 git clone https://github.com/Joyerics/Healthcare_Prediction_model.git 
-hpm Healthcare_Prediction_model
+hp Healthcare_Prediction
 
 pip install -r requirements.txt
 python app.py
@@ -182,21 +182,6 @@ python app.py
 * Improve recall through threshold tuning
 * Implement fairness-aware machine learning
 
----
-
-## Contributors
-
-* **Chinenye Onyedika**
-
-  * UI Development
-  * Model Integration
-  * Deployment
-
-* **Nene Tenabe**
-
-  * Data Cleaning
-  * Hypothesis Testing
-  * Analysis
 
 ---
 
