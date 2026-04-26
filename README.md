@@ -149,8 +149,8 @@ The project includes a **fully deployed healthcare-style web application**.
 ## Installation
 
 ```bash
-git clone https://github.com/your-username/cvd-prediction.git
-cd cvd-prediction
+git clone https://github.com/Joyerics/Healthcare_Prediction_model.git 
+hpm Healthcare_Prediction_model
 
 pip install -r requirements.txt
 python app.py
